@@ -17,12 +17,14 @@ async function onPageLoad() {
 	try {
 		getTracks()
 			.then(tracks => {
+				console.log(tracks)
 				const html = renderTrackCards(tracks)
 				renderAt('#tracks', html)
 			})
 
 		getRacers()
 			.then((racers) => {
+				console.log(racers)
 				const html = renderRacerCars(racers)
 				renderAt('#racers', html)
 			})
@@ -78,18 +80,24 @@ async function handleCreateRace() {
 	renderAt('#race', renderRaceStartView())
 
 	// TODO - Get player_id and track_id from the store
+	const { player_id, track_id} = store
 	
 	// const race = TODO - invoke the API call to create the race, then save the result
-
+	const race = await createRace(player_id, track_id)
+	console.log(race)
+	
 	// TODO - update the store with the race id
+	store.race_id = race.ID
+	console.log(store)
 
 	// The race has been created, now start the countdown
 	// TODO - call the async function runCountdown
-
+	runCountdown()
 	// TODO - call the async function startRace
-
+	// startRace(store.race_id)
 	// TODO - call the async function runRace
-}
+	// runRace(store.race_id)
+}	
 
 function runRace(raceID) {
 	return new Promise(resolve => {
@@ -120,12 +128,18 @@ async function runCountdown() {
 
 		return new Promise(resolve => {
 			// TODO - use Javascript's built in setInterval method to count down once per second
-
+			const intervalId = setInterval(myCallback, 1000)
 			// run this DOM manipulation to decrement the countdown for the user
-			document.getElementById('big-numbers').innerHTML = --timer
-
-			// TODO - if the countdown is done, clear the interval, resolve the promise, and return
-
+			function myCallback() {
+				if(timer >= 0) {
+					document.getElementById('big-numbers').innerHTML = --timer
+					timer = timer - 1
+				} else {
+					// TODO - if the countdown is done, clear the interval, resolve the promise, and return
+					clearInterval(intervalId)
+					resolve()
+				}
+			}
 		})
 	} catch(error) {
 		console.log(error);
@@ -145,6 +159,8 @@ function handleSelectPodRacer(target) {
 	target.classList.add('selected')
 
 	// TODO - save the selected racer to the store
+	store.player_id = target.id
+	console.log(store)
 }
 
 function handleSelectTrack(target) {
@@ -160,6 +176,8 @@ function handleSelectTrack(target) {
 	target.classList.add('selected')
 
 	// TODO - save the selected track id to the store
+	store.track_id = target.id
+	console.log(store)
 	
 }
 
@@ -182,7 +200,7 @@ function renderRacerCars(racers) {
 
 	return `
 		<ul id="racers">
-			${reuslts}
+			${results}
 		</ul>
 	`
 }
@@ -233,10 +251,10 @@ function renderCountdown(count) {
 	`
 }
 
-function renderRaceStartView(track, racers) {
+function renderRaceStartView() {
 	return `
 		<header>
-			<h1>Race: ${track.name}</h1>
+			<h1>Race:</h1>
 		</header>
 		<main id="two-columns">
 			<section id="leaderBoard">

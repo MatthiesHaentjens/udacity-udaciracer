@@ -104,7 +104,7 @@ async function handleCreateRace() {
 		// TODO - call the async function runRace
 		// runRace(store.race_id)
 	} catch(error) {
-		console.log(error)
+		console.log("Problem with runRace handleCreateRace::", err)
 	} 
 }	
 
@@ -171,7 +171,7 @@ function handleSelectPodRacer(target) {
 	target.classList.add('selected')
 
 	// TODO - save the selected racer to the store
-	store.player_id = target.id
+	store.player_id = parseInt(target.id)
 	console.log(store)
 }
 
@@ -188,7 +188,7 @@ function handleSelectTrack(target) {
 	target.classList.add('selected')
 
 	// TODO - save the selected track id to the store
-	store.track_id = target.id
+	store.track_id = parseInt(target.id)
 	console.log(store)
 	
 }
